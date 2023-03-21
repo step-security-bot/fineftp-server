@@ -10,6 +10,9 @@ env:
   BUILD_TYPE:   Release
   PROJECT_NAME: fineftp-server
 
+permissions:
+  contents: read
+
 jobs:
   build-ubuntu:
 
@@ -24,6 +27,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+
+    - name: Harden Runner
+      uses: step-security/harden-runner@1f99358870fe1c846a3ccba386cc2b2246836776 # v2.2.1
+      with:
+        egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
 
     - name: Set Variables
       run: |
@@ -64,7 +72,7 @@ jobs:
       shell: bash
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0
       with:
         submodules:  'true'
         fetch-depth: 0
@@ -104,7 +112,7 @@ jobs:
       working-directory: ${{github.workspace}}/_build/_package/
 
     - name: Upload binaries
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
         name: ${{ env.PROJECT_NAME }}-${{ env.CMAKE_PROJECT_VERSION }}-${{ matrix.os }}-${{ env.package_postfix }}
         path: ${{github.workspace}}/_build/_package/*.deb
